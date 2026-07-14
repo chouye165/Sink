@@ -5,6 +5,11 @@ import 'playcaptcha/clawcaptcha.css'
 // PlayCaptcha is a React component, so we mount it into a host element with a
 // tiny React root. This file is a `.client.vue`, so it is never pulled into the
 // server bundle (Nuxt keeps it client-only).
+//
+// The library only exposes a `title` heading for localization (its internal
+// labels are fixed), so we pass the localized heading in and let the parent
+// re-mount us (via a `:key`) whenever the locale changes.
+const props = defineProps<{ title?: string }>()
 const emit = defineEmits<{ verify: [] }>()
 
 const host = ref<HTMLElement | null>(null)
@@ -22,7 +27,7 @@ onMounted(async () => {
     const instance = createRoot(host.value)
     instance.render(
       React.createElement(ClawCaptcha as React.ComponentType<Record<string, unknown>>, {
-        language: 'zh',
+        title: props.title,
         onVerify: () => emit('verify'),
       }),
     )

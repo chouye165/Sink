@@ -164,6 +164,7 @@
     "slug_taken": "This slug is already taken, try another.",
     "error_generic": "Something went wrong, please try again.",
     "captcha": {
+      "title": "Verify you are human",
       "prompt": "Complete the claw-machine check to prove you are human",
       "loading": "Loading verification…",
       "verified": "Verified",
