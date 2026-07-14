@@ -55,7 +55,8 @@
     "analysis": "Analyse",
     "realtime": "Echtzeit",
     "check": "Check",
-    "migrate": "Import/Export"
+    "migrate": "Import/Export",
+    "home_settings": "Homepage Settings"
   },
   "sidebar": {
     "subtitle": "Link-Verkürzer",
@@ -162,6 +163,12 @@
     "invalid_url": "Please enter a valid URL.",
     "slug_taken": "This slug is already taken, try another.",
     "error_generic": "Something went wrong, please try again.",
+    "captcha": {
+      "prompt": "Complete the claw-machine check to prove you are human",
+      "loading": "Loading verification…",
+      "verified": "Verified",
+      "required": "Please complete the verification first"
+    },
     "dashboard": "Dashboard"
   },
   "dashboard": {
@@ -442,6 +449,17 @@
         "no_links": "Keine Links in der Datei gefunden",
         "parse_error": "Datei konnte nicht analysiert werden"
       }
+    }
+  },
+  "settings": {
+    "home": {
+      "title": "Homepage settings",
+      "description": "Control the public homepage and human verification.",
+      "homepage_enabled": "Enable homepage generator",
+      "homepage_enabled_desc": "When off, visiting the homepage shows the 404 page.",
+      "captcha_enabled": "Enable captcha verification",
+      "captcha_enabled_desc": "Require the claw-machine captcha before generating a link.",
+      "saved": "Settings saved."
     }
   }
 }

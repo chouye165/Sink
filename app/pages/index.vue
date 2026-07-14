@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import type { Link } from '@/types'
-import { LinkSchema, nanoid } from '#shared/schemas/link'
 import { useClipboard } from '@vueuse/core'
 import { Check, Copy, Shuffle } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { toast } from 'vue-sonner'
+import { showError } from '#app'
+import { LinkSchema, nanoid } from '#shared/schemas/link'
+
+interface SiteConfig {
+  homepageEnabled: boolean
+  captchaEnabled: boolean
+}
 
 definePageMeta({
   layout: 'blank',
@@ -17,9 +23,38 @@ const slug = ref('')
 const isLoading = ref(false)
 const errorMsg = ref('')
 const result = ref<{ shortLink: string, slug: string } | null>(null)
+const captchaVerified = ref(false)
 
 const urlValidator = LinkSchema.shape.url
 const generateSlug = nanoid()
+
+// Public, non-sensitive site toggles fetched from the server.
+const config = ref<SiteConfig | null>(null)
+const loadingConfig = ref(true)
+
+const showCaptcha = computed(() => config.value?.captchaEnabled !== false)
+
+onMounted(async () => {
+  try {
+    const data = await $fetch<SiteConfig>('/api/config')
+    config.value = data
+    // When the homepage generator is disabled, fall back to the existing 404 page.
+    if (data.homepageEnabled === false) {
+      showError({ statusCode: 404, statusMessage: 'Not Found' })
+      return
+    }
+    // With the captcha disabled, treat the user as already verified.
+    if (data.captchaEnabled === false)
+      captchaVerified.value = true
+  }
+  catch {
+    // If the config cannot be read, default to the enabled behaviour.
+    config.value = { homepageEnabled: true, captchaEnabled: true }
+  }
+  finally {
+    loadingConfig.value = false
+  }
+})
 
 function randomizeSlug() {
   slug.value = generateSlug()
@@ -27,6 +62,10 @@ function randomizeSlug() {
 
 async function generate() {
   errorMsg.value = ''
+  if (!captchaVerified.value) {
+    errorMsg.value = t('home.captcha.required')
+    return
+  }
   const urlCheck = urlValidator.safeParse(url.value)
   if (!urlCheck.success) {
     errorMsg.value = t('home.invalid_url')
@@ -71,11 +110,27 @@ function reset() {
   url.value = ''
   slug.value = ''
   errorMsg.value = ''
+  captchaVerified.value = false
 }
 </script>
 
 <template>
-  <div class="flex min-h-[100svh] items-center justify-center px-4 py-10">
+  <div
+    v-if="loadingConfig"
+    class="flex min-h-[100svh] items-center justify-center"
+  >
+    <span
+      class="
+        h-6 w-6 animate-spin rounded-full border-2 border-current
+        border-t-transparent
+      "
+    />
+  </div>
+
+  <div
+    v-else
+    class="flex min-h-[100svh] items-center justify-center px-4 py-10"
+  >
     <Card class="w-full max-w-xl">
       <CardHeader>
         <CardTitle class="text-2xl">
@@ -164,6 +219,30 @@ function reset() {
             </div>
           </div>
 
+          <!-- Human verification -->
+          <div
+            v-if="showCaptcha"
+            class="space-y-2"
+          >
+            <p class="text-xs text-muted-foreground">
+              {{ $t('home.captcha.prompt') }}
+            </p>
+            <PlayCaptcha
+              v-if="!captchaVerified"
+              @verify="captchaVerified = true"
+            />
+            <div
+              v-else
+              class="
+                flex items-center gap-2 rounded-md border border-green-500/40
+                bg-green-500/10 px-3 py-2 text-sm text-green-600
+              "
+            >
+              <Check class="h-4 w-4" />
+              {{ $t('home.captcha.verified') }}
+            </div>
+          </div>
+
           <Alert v-if="errorMsg" variant="destructive">
             <AlertDescription>{{ errorMsg }}</AlertDescription>
           </Alert>
@@ -171,7 +250,7 @@ function reset() {
           <Button
             type="submit"
             class="w-full"
-            :disabled="isLoading"
+            :disabled="isLoading || !captchaVerified"
           >
             <span
               v-if="isLoading" class="

@@ -1,5 +1,7 @@
 import { timingSafeEqual } from 'node:crypto'
 
+const BEARER_REGEX = /^Bearer\s+/
+
 export default eventHandler(async (event) => {
   if (!event.path.startsWith('/api/'))
     return
@@ -10,7 +12,13 @@ export default eventHandler(async (event) => {
     return
   }
 
-  const token = getHeader(event, 'Authorization')?.replace(/^Bearer\s+/, '')
+  // Public, unauthenticated read of the (non-sensitive) homepage toggles.
+  if (event.path === '/api/config' && event.method === 'GET') {
+    event.context.authMethod = 'public'
+    return
+  }
+
+  const token = getHeader(event, 'Authorization')?.replace(BEARER_REGEX, '')
   if (await verifySiteToken(token, useRuntimeConfig(event).siteToken)) {
     event.context.authMethod = 'site-token'
     return

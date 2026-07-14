@@ -55,7 +55,8 @@
     "analysis": "分析",
     "realtime": "即時",
     "check": "檢查",
-    "migrate": "匯入/匯出"
+    "migrate": "匯入/匯出",
+    "home_settings": "首頁設定"
   },
   "sidebar": {
     "subtitle": "縮網址服務",
@@ -162,6 +163,12 @@
     "invalid_url": "請輸入有效的連結。",
     "slug_taken": "該短碼已被佔用，請換一個。",
     "error_generic": "出錯了，請重試。",
+    "captcha": {
+      "prompt": "完成抓娃娃驗證，證明你是真人",
+      "loading": "正在載入驗證…",
+      "verified": "驗證通過",
+      "required": "請先完成驗證"
+    },
     "dashboard": "控制台"
   },
   "dashboard": {
@@ -442,6 +449,17 @@
         "no_links": "檔案中找不到連結",
         "parse_error": "檔案解析失敗"
       }
+    }
+  },
+  "settings": {
+    "home": {
+      "title": "首頁設定",
+      "description": "控制公開首頁與真人驗證功能。",
+      "homepage_enabled": "啟用首頁產生器",
+      "homepage_enabled_desc": "關閉後訪問首頁將顯示 404 頁面。",
+      "captcha_enabled": "啟用驗證碼",
+      "captcha_enabled_desc": "產生短網址前需完成抓娃娃驗證碼。",
+      "saved": "設定已儲存。"
     }
   }
 }

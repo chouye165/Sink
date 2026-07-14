@@ -55,7 +55,8 @@
     "analysis": "分析",
     "realtime": "实时",
     "check": "检测",
-    "migrate": "导入/导出"
+    "migrate": "导入/导出",
+    "home_settings": "首页设置"
   },
   "sidebar": {
     "subtitle": "短链接服务",
@@ -162,6 +163,12 @@
     "invalid_url": "请输入有效的链接。",
     "slug_taken": "该短码已被占用，请换一个。",
     "error_generic": "出错了，请重试。",
+    "captcha": {
+      "prompt": "完成抓娃娃验证，证明你是真人",
+      "loading": "正在加载验证…",
+      "verified": "验证通过",
+      "required": "请先完成验证"
+    },
     "dashboard": "控制台"
   },
   "dashboard": {
@@ -442,6 +449,17 @@
         "no_links": "文件中未找到链接",
         "parse_error": "文件解析失败"
       }
+    }
+  },
+  "settings": {
+    "home": {
+      "title": "首页设置",
+      "description": "控制公开首页与真人验证功能。",
+      "homepage_enabled": "启用首页生成器",
+      "homepage_enabled_desc": "关闭后访问首页将显示 404 页面。",
+      "captcha_enabled": "启用验证码",
+      "captcha_enabled_desc": "生成短链前需完成抓娃娃验证码。",
+      "saved": "设置已保存。"
     }
   }
 }
