@@ -164,7 +164,6 @@
     "slug_taken": "該短碼已被佔用，請換一個。",
     "error_generic": "出錯了，請重試。",
     "captcha": {
-      "title": "驗證你是真人",
       "prompt": "完成抓娃娃驗證，證明你是真人",
       "loading": "正在載入驗證…",
       "verified": "驗證通過",
