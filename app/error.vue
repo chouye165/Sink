@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <NuxtLayout name="default">
+  <NuxtLayout name="blank">
     <a
       class="
         mx-auto flex h-full w-full max-w-[600px] items-center justify-center
