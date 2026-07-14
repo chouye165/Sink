@@ -7,24 +7,15 @@ import 'playcaptcha/clawcaptcha.css'
 // server bundle (Nuxt keeps it client-only).
 const emit = defineEmits<{ verify: [] }>()
 
-const { locale } = useI18n()
+const { t } = useI18n()
 
 const host = ref<HTMLElement | null>(null)
 const loading = ref(true)
 let root: import('react-dom/client').Root | null = null
 
-// Map a Nuxt i18n locale code to a PlayCaptcha language code.
-// PlayCaptcha expects short codes: `zh` (Simplified), `zh-TW` (Traditional),
-// `en`, and the primary subtag for the rest (e.g. `fr-FR` -> `fr`).
-function captchaLanguage(): string {
-  const code = (locale.value || 'en-US').toLowerCase()
-  if (code.startsWith('zh'))
-    return code === 'zh-cn' ? 'zh' : 'zh-TW'
-  if (code.startsWith('en'))
-    return 'en'
-  return code.split('-')[0]
-}
-
+// ClawCaptcha has no `language` prop — its only text-bearing prop is `title`,
+// so we localize the heading through i18n and re-mount (via the parent's
+// :key="locale") when the locale changes.
 onMounted(async () => {
   if (!host.value)
     return
@@ -36,7 +27,7 @@ onMounted(async () => {
     const instance = createRoot(host.value)
     instance.render(
       React.createElement(ClawCaptcha as React.ComponentType<Record<string, unknown>>, {
-        language: captchaLanguage(),
+        title: t('home.captcha.title'),
         onVerify: () => emit('verify'),
       }),
     )

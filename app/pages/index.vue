@@ -16,7 +16,12 @@ definePageMeta({
   layout: 'blank',
 })
 
-const { t, locale } = useI18n()
+const { t, locale, setLocale } = useI18n()
+
+// Homepage only offers Chinese / English toggling.
+function toggleHomeLocale() {
+  setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
+}
 
 const url = ref('')
 const slug = ref('')
@@ -115,9 +120,17 @@ function reset() {
 </script>
 
 <template>
-  <!-- Language switcher, always available so the captcha text can switch -->
+  <!-- Language switcher: homepage supports Chinese / English only -->
   <div class="fixed right-4 top-4 z-50">
-    <SwitchLanguage />
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      :aria-label="locale === 'zh-CN' ? 'Switch to English' : '切换到中文'"
+      @click="toggleHomeLocale"
+    >
+      {{ locale === 'zh-CN' ? 'English' : '中文' }}
+    </Button>
   </div>
 
   <div
