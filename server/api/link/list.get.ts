@@ -26,12 +26,13 @@ defineRouteMeta({
 const ListQuerySchema = z.object({
   limit: z.coerce.number().max(1024).default(20),
   cursor: z.string().trim().max(1024).optional(),
+  source: z.enum(['admin', 'guest']).optional(),
 })
 
 export default eventHandler(async (event) => {
-  const { limit, cursor } = await getValidatedQuery(event, ListQuerySchema.parse)
+  const { limit, cursor, source } = await getValidatedQuery(event, ListQuerySchema.parse)
 
-  const list = await listLinks(event, { limit, cursor })
+  const list = await listLinks(event, { limit, cursor, source })
   return {
     ...list,
     links: sanitizeLinksPassword(list.links),

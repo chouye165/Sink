@@ -144,7 +144,25 @@
     "testimonials": {
       "title": "用户好评",
       "subtitle": "看看开发者们怎么说"
-    }
+    },
+    "title": "缩短你的链接",
+    "subtitle": "粘贴一个长链接，几秒钟内获得一个简短、可分享的短链接。",
+    "form": {
+      "url": "目标链接",
+      "slug": "自定义短码（可选）",
+      "slug_placeholder": "留空则自动生成",
+      "random": "随机生成"
+    },
+    "generate": "生成",
+    "generating": "生成中…",
+    "result_title": "你的短链接已生成",
+    "copy": "复制",
+    "copy_success": "已复制到剪贴板！",
+    "create_another": "再生成一个",
+    "invalid_url": "请输入有效的链接。",
+    "slug_taken": "该短码已被占用，请换一个。",
+    "error_generic": "出错了，请重试。",
+    "dashboard": "控制台"
   },
   "dashboard": {
     "title": "仪表盘",
@@ -293,7 +311,17 @@
     "create_failed": "创建链接失败",
     "ai_slug_failed": "AI 生成短链失败",
     "ai_og_failed": "生成 AI OpenGraph 失败",
-    "ai_og_success": "成功生成 AI OpenGraph"
+    "ai_og_success": "成功生成 AI OpenGraph",
+    "filter": {
+      "source": "来源",
+      "all": "全部",
+      "admin": "控制台",
+      "guest": "游客"
+    },
+    "source": {
+      "admin": "控制台",
+      "guest": "游客"
+    }
   },
   "check": {
     "title": "链接检测",

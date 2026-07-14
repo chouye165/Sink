@@ -47,13 +47,14 @@ export function buildLinkResponse(event: H3Event, link: Link): LinkResponse {
 }
 
 export function mergeEditableLink(existingLink: Link, link: Link): Link {
-  const { password: _password, ...linkWithoutPassword } = link
+  const { password: _password, source: _source, ...linkWithoutPassword } = link
   const newLink = {
     ...existingLink,
     ...linkWithoutPassword,
     id: existingLink.id,
     createdAt: existingLink.createdAt,
     updatedAt: Math.floor(Date.now() / 1000),
+    source: existingLink.source,
   }
 
   cleanupOptionalLinkFields(newLink, link)

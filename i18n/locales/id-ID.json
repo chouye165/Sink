@@ -144,7 +144,25 @@
     "testimonials": {
       "title": "Disukai Pengguna",
       "subtitle": "Lihat apa kata developer tentang Sink"
-    }
+    },
+    "title": "Shorten your links",
+    "subtitle": "Paste a long URL and get a short, shareable link in seconds.",
+    "form": {
+      "url": "Destination URL",
+      "slug": "Custom slug (optional)",
+      "slug_placeholder": "leave empty to auto-generate",
+      "random": "Randomize"
+    },
+    "generate": "Generate",
+    "generating": "Generating...",
+    "result_title": "Your short link is ready",
+    "copy": "Copy",
+    "copy_success": "Copied to clipboard!",
+    "create_another": "Create another",
+    "invalid_url": "Please enter a valid URL.",
+    "slug_taken": "This slug is already taken, try another.",
+    "error_generic": "Something went wrong, please try again.",
+    "dashboard": "Dashboard"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -293,7 +311,17 @@
     "create_failed": "Gagal membuat tautan",
     "ai_slug_failed": "Gagal membuat slug AI",
     "ai_og_failed": "Gagal membuat OpenGraph AI",
-    "ai_og_success": "OpenGraph AI berhasil dibuat"
+    "ai_og_success": "OpenGraph AI berhasil dibuat",
+    "filter": {
+      "source": "Source",
+      "all": "All",
+      "admin": "Console",
+      "guest": "Guest"
+    },
+    "source": {
+      "admin": "Console",
+      "guest": "Guest"
+    }
   },
   "check": {
     "title": "Link Check",

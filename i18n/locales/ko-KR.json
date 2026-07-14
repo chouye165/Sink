@@ -144,7 +144,25 @@
     "testimonials": {
       "title": "사용자들의 사랑을 받고 있습니다",
       "subtitle": "개발자들이 Sink에 대해 말하는 것을 확인하세요"
-    }
+    },
+    "title": "Shorten your links",
+    "subtitle": "Paste a long URL and get a short, shareable link in seconds.",
+    "form": {
+      "url": "Destination URL",
+      "slug": "Custom slug (optional)",
+      "slug_placeholder": "leave empty to auto-generate",
+      "random": "Randomize"
+    },
+    "generate": "Generate",
+    "generating": "Generating...",
+    "result_title": "Your short link is ready",
+    "copy": "Copy",
+    "copy_success": "Copied to clipboard!",
+    "create_another": "Create another",
+    "invalid_url": "Please enter a valid URL.",
+    "slug_taken": "This slug is already taken, try another.",
+    "error_generic": "Something went wrong, please try again.",
+    "dashboard": "Dashboard"
   },
   "dashboard": {
     "title": "대시보드",
@@ -293,7 +311,17 @@
     "create_failed": "링크 생성에 실패했습니다",
     "ai_slug_failed": "AI 슬러그 생성에 실패했습니다",
     "ai_og_failed": "AI OpenGraph 생성에 실패했습니다",
-    "ai_og_success": "AI OpenGraph가 성공적으로 생성되었습니다"
+    "ai_og_success": "AI OpenGraph가 성공적으로 생성되었습니다",
+    "filter": {
+      "source": "Source",
+      "all": "All",
+      "admin": "Console",
+      "guest": "Guest"
+    },
+    "source": {
+      "admin": "Console",
+      "guest": "Guest"
+    }
   },
   "check": {
     "title": "링크 점검",

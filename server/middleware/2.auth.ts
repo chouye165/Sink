@@ -4,6 +4,12 @@ export default eventHandler(async (event) => {
   if (!event.path.startsWith('/api/'))
     return
 
+  // Public, unauthenticated short-link generation endpoint for guests.
+  if (event.path === '/api/link/guest' && event.method === 'POST') {
+    event.context.authMethod = 'guest'
+    return
+  }
+
   const token = getHeader(event, 'Authorization')?.replace(/^Bearer\s+/, '')
   if (await verifySiteToken(token, useRuntimeConfig(event).siteToken)) {
     event.context.authMethod = 'site-token'

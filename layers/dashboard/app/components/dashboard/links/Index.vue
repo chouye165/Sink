@@ -67,15 +67,24 @@ const displayedLinks = computed(() => {
   }
 })
 
+function resetList() {
+  links.value = []
+  cursor = ''
+  listComplete.value = false
+  listError.value = false
+}
+
 async function getLinks() {
   try {
+    const source = linksStore.sourceFilter === 'all' ? undefined : linksStore.sourceFilter
     const data = await useAPI<LinkListResponse>('/api/link/list', {
       query: {
         limit,
         cursor,
+        ...(source ? { source } : {}),
       },
     })
-    const newLinks = data.links.filter(Boolean)
+    const newLinks = data.links.filter(Boolean) as Link[]
     links.value = links.value.concat(newLinks)
     cursor = data.cursor
     listComplete.value = data.list_complete
@@ -89,6 +98,12 @@ async function getLinks() {
     listError.value = true
   }
 }
+
+// Reload the list whenever the source filter changes.
+watch(() => linksStore.sourceFilter, () => {
+  resetList()
+  getLinks()
+})
 
 const { isLoading } = useInfiniteScroll(
   scrollContainer as unknown as Ref<HTMLElement | null>,

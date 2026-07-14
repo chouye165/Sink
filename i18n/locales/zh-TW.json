@@ -144,7 +144,25 @@
     "testimonials": {
       "title": "深受用戶喜愛",
       "subtitle": "看看開發者們都怎麼描述 Sink"
-    }
+    },
+    "title": "縮短你的連結",
+    "subtitle": "貼上一個長連結，幾秒鐘內獲得一個簡短、可分享的短連結。",
+    "form": {
+      "url": "目標連結",
+      "slug": "自訂短碼（可選）",
+      "slug_placeholder": "留空則自動生成",
+      "random": "隨機生成"
+    },
+    "generate": "生成",
+    "generating": "生成中…",
+    "result_title": "你的短連結已生成",
+    "copy": "複製",
+    "copy_success": "已複製到剪貼簿！",
+    "create_another": "再生成一個",
+    "invalid_url": "請輸入有效的連結。",
+    "slug_taken": "該短碼已被佔用，請換一個。",
+    "error_generic": "出錯了，請重試。",
+    "dashboard": "控制台"
   },
   "dashboard": {
     "title": "儀表板",
@@ -293,7 +311,17 @@
     "create_failed": "創建連結失敗",
     "ai_slug_failed": "AI 生成短連結失敗",
     "ai_og_failed": "生成 AI OpenGraph 失敗",
-    "ai_og_success": "成功生成 AI OpenGraph"
+    "ai_og_success": "成功生成 AI OpenGraph",
+    "filter": {
+      "source": "來源",
+      "all": "全部",
+      "admin": "控制台",
+      "guest": "遊客"
+    },
+    "source": {
+      "admin": "控制台",
+      "guest": "遊客"
+    }
   },
   "check": {
     "title": "連結檢測",

@@ -10,6 +10,7 @@ export interface LinkUpdateEvent {
 
 export const useDashboardLinksStore = defineStore('dashboard-links', () => {
   const sortBy = ref<'newest' | 'oldest' | 'az' | 'za'>('az')
+  const sourceFilter = ref<'all' | 'admin' | 'guest'>('all')
 
   const showLinkEditor = ref(false)
   const editingLink = ref<Record<string, unknown> | null>(null)
@@ -38,6 +39,7 @@ export const useDashboardLinksStore = defineStore('dashboard-links', () => {
 
   return {
     sortBy,
+    sourceFilter,
     showLinkEditor,
     editingLink,
     openLinkEditor,

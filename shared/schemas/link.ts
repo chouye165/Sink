@@ -48,6 +48,7 @@ export const LinkSchema = z.object({
   password: LinkPasswordSchema.optional(),
   unsafe: z.boolean().optional(),
   geo: GeoSchema.optional(),
+  source: z.enum(['admin', 'guest']).default('admin'),
 })
 
 export type Link = z.infer<typeof LinkSchema>
