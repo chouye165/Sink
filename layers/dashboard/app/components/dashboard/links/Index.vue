@@ -8,6 +8,7 @@ const linksStore = useDashboardLinksStore()
 const links = ref<Link[]>([])
 const listComplete = ref(false)
 const listError = ref(false)
+const isFetching = ref(false)
 const limit = 24
 let cursor = ''
 
@@ -75,6 +76,12 @@ function resetList() {
 }
 
 async function getLinks() {
+  // Guard against concurrent fetches (e.g. the source-filter watcher and
+  // useInfiniteScroll firing at the same time) which would otherwise read the
+  // same stale cursor and duplicate the first page.
+  if (isFetching.value)
+    return
+  isFetching.value = true
   try {
     const source = linksStore.sourceFilter === 'all' ? undefined : linksStore.sourceFilter
     const data = await useAPI<LinkListResponse>('/api/link/list', {
@@ -96,6 +103,9 @@ async function getLinks() {
   catch (error) {
     console.error(error)
     listError.value = true
+  }
+  finally {
+    isFetching.value = false
   }
 }
 

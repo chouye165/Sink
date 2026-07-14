@@ -2,9 +2,13 @@
 import type { Link } from '@/types'
 import { LinkSchema, nanoid } from '#shared/schemas/link'
 import { useClipboard } from '@vueuse/core'
-import { Check, Copy, Link2, Shuffle } from 'lucide-vue-next'
+import { Check, Copy, Shuffle } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
+
+definePageMeta({
+  layout: 'blank',
+})
 
 const { t } = useI18n()
 
@@ -71,147 +75,114 @@ function reset() {
 </script>
 
 <template>
-  <div class="relative flex min-h-[100svh] flex-col">
-    <!-- Top bar -->
-    <header class="flex items-center justify-between px-6 py-4">
-      <div class="flex items-center gap-2 font-bold">
-        <div
-          class="
-            flex h-8 w-8 items-center justify-center rounded-lg bg-primary
-            text-primary-foreground
-          "
-        >
-          <Link2 class="h-4 w-4" />
-        </div>
-        <span class="text-lg">Sink</span>
-      </div>
-      <NuxtLink
-        to="/dashboard"
-        class="
-          text-sm text-muted-foreground transition-colors
-          hover:text-foreground
-        "
-      >
-        {{ $t('home.dashboard') }}
-      </NuxtLink>
-    </header>
+  <div class="flex min-h-[100svh] items-center justify-center px-4 py-10">
+    <Card class="w-full max-w-xl">
+      <CardHeader>
+        <CardTitle class="text-2xl">
+          {{ $t('home.title') }}
+        </CardTitle>
+        <CardDescription>
+          {{ $t('home.subtitle') }}
+        </CardDescription>
+      </CardHeader>
 
-    <!-- Hero -->
-    <main class="flex flex-1 items-center justify-center px-4 py-10">
-      <Card class="w-full max-w-xl">
-        <CardHeader>
-          <CardTitle class="text-2xl">
-            {{ $t('home.title') }}
-          </CardTitle>
-          <CardDescription>
-            {{ $t('home.subtitle') }}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent class="space-y-4">
-          <!-- Result state -->
-          <div v-if="result" class="space-y-4">
-            <div class="rounded-lg border bg-muted/40 p-4">
-              <p
-                class="
-                  mb-2 text-xs tracking-wide text-muted-foreground uppercase
-                "
-              >
-                {{ $t('home.result_title') }}
-              </p>
-              <div class="flex items-center gap-2">
-                <code class="flex-1 truncate text-sm font-medium">{{ result.shortLink }}</code>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="secondary"
-                  :aria-label="$t('home.copy')"
-                  @click="copyLink"
-                >
-                  <Check v-if="copied" class="h-4 w-4" />
-                  <Copy v-else class="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              class="w-full"
-              @click="reset"
+      <CardContent class="space-y-4">
+        <!-- Result state -->
+        <div v-if="result" class="space-y-4">
+          <div class="rounded-lg border bg-muted/40 p-4">
+            <p
+              class="mb-2 text-xs tracking-wide text-muted-foreground uppercase"
             >
-              {{ $t('home.create_another') }}
-            </Button>
+              {{ $t('home.result_title') }}
+            </p>
+            <div class="flex items-center gap-2">
+              <code class="flex-1 truncate text-sm font-medium">{{ result.shortLink }}</code>
+              <Button
+                type="button"
+                size="icon"
+                variant="secondary"
+                :aria-label="$t('home.copy')"
+                @click="copyLink"
+              >
+                <Check v-if="copied" class="h-4 w-4" />
+                <Copy v-else class="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            class="w-full"
+            @click="reset"
+          >
+            {{ $t('home.create_another') }}
+          </Button>
+        </div>
+
+        <!-- Form state -->
+        <form
+          v-else
+          class="space-y-4"
+          @submit.prevent="generate"
+        >
+          <div class="space-y-2">
+            <Label for="url">{{ $t('home.form.url') }}</Label>
+            <Input
+              id="url"
+              v-model="url"
+              type="url"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://example.com"
+              :disabled="isLoading"
+              required
+            />
           </div>
 
-          <!-- Form state -->
-          <form
-            v-else
-            class="space-y-4"
-            @submit.prevent="generate"
-          >
-            <div class="space-y-2">
-              <Label for="url">{{ $t('home.form.url') }}</Label>
+          <div class="space-y-2">
+            <Label for="slug">{{ $t('home.form.slug') }}</Label>
+            <div class="flex gap-2">
               <Input
-                id="url"
-                v-model="url"
-                type="url"
-                inputmode="url"
-                autocomplete="url"
-                placeholder="https://example.com"
+                id="slug"
+                v-model="slug"
+                type="text"
+                autocomplete="off"
+                :placeholder="$t('home.form.slug_placeholder')"
                 :disabled="isLoading"
-                required
+                class="flex-1"
               />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                :aria-label="$t('home.form.random')"
+                :disabled="isLoading"
+                @click="randomizeSlug"
+              >
+                <Shuffle class="h-4 w-4" />
+              </Button>
             </div>
+          </div>
 
-            <div class="space-y-2">
-              <Label for="slug">{{ $t('home.form.slug') }}</Label>
-              <div class="flex gap-2">
-                <Input
-                  id="slug"
-                  v-model="slug"
-                  type="text"
-                  autocomplete="off"
-                  :placeholder="$t('home.form.slug_placeholder')"
-                  :disabled="isLoading"
-                  class="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  :aria-label="$t('home.form.random')"
-                  :disabled="isLoading"
-                  @click="randomizeSlug"
-                >
-                  <Shuffle class="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+          <Alert v-if="errorMsg" variant="destructive">
+            <AlertDescription>{{ errorMsg }}</AlertDescription>
+          </Alert>
 
-            <Alert v-if="errorMsg" variant="destructive">
-              <AlertDescription>{{ errorMsg }}</AlertDescription>
-            </Alert>
-
-            <Button
-              type="submit"
-              class="w-full"
-              :disabled="isLoading"
-            >
-              <span
-                v-if="isLoading" class="
-                  mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current
-                  border-t-transparent
-                "
-              />
-              {{ isLoading ? $t('home.generating') : $t('home.generate') }}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
-
-    <footer class="px-6 py-4 text-center text-xs text-muted-foreground">
-      Sink · {{ $t('layouts.footer.copyright') }}
-    </footer>
+          <Button
+            type="submit"
+            class="w-full"
+            :disabled="isLoading"
+          >
+            <span
+              v-if="isLoading" class="
+                mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current
+                border-t-transparent
+              "
+            />
+            {{ isLoading ? $t('home.generating') : $t('home.generate') }}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   </div>
 </template>
