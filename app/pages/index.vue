@@ -16,12 +16,10 @@ definePageMeta({
   layout: 'blank',
 })
 
-const { t, locale, setLocale } = useI18n()
-
-// Homepage only offers Chinese / English toggling.
-function toggleHomeLocale() {
-  setLocale(locale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
-}
+// `SwitchLanguage` and `PlayCaptcha` are auto-imported Nuxt components
+// (app/components/), so no explicit import is needed — this avoids any
+// alias-resolution pitfalls at runtime.
+const { t, locale } = useI18n()
 
 const url = ref('')
 const slug = ref('')
@@ -31,12 +29,15 @@ const result = ref<{ shortLink: string, slug: string } | null>(null)
 const captchaVerified = ref(false)
 
 const urlValidator = LinkSchema.shape.url
-const generateSlug = nanoid()
+const generateSlug = () => nanoid()
 
 // Public, non-sensitive site toggles fetched from the server.
 const config = ref<SiteConfig | null>(null)
 const loadingConfig = ref(true)
 
+// When the captcha is disabled, treat the user as already verified so the
+// form is usable. Until we know (SSR / first paint) we assume it is enabled
+// and show the captcha placeholder.
 const showCaptcha = computed(() => config.value?.captchaEnabled !== false)
 
 onMounted(async () => {
@@ -120,167 +121,146 @@ function reset() {
 </script>
 
 <template>
-  <!-- Language switcher: homepage supports Chinese / English only -->
-  <div class="fixed right-4 top-4 z-50">
-    <Button
-      type="button"
-      variant="outline"
-      size="sm"
-      :aria-label="locale === 'zh-CN' ? 'Switch to English' : '切换到中文'"
-      @click="toggleHomeLocale"
+  <div class="relative">
+    <SwitchLanguage class="fixed top-4 right-4 z-50" />
+
+    <div
+      class="flex min-h-[100svh] items-center justify-center px-4 py-10"
     >
-      {{ locale === 'zh-CN' ? 'English' : '中文' }}
-    </Button>
-  </div>
+      <Card class="w-full max-w-xl">
+        <CardHeader>
+          <CardTitle class="text-2xl">
+            {{ $t('home.title') }}
+          </CardTitle>
+          <CardDescription>
+            {{ $t('home.subtitle') }}
+          </CardDescription>
+        </CardHeader>
 
-  <div
-    v-if="loadingConfig"
-    class="flex min-h-[100svh] items-center justify-center"
-  >
-    <span
-      class="
-        h-6 w-6 animate-spin rounded-full border-2 border-current
-        border-t-transparent
-      "
-    />
-  </div>
-
-  <div
-    v-else
-    class="flex min-h-[100svh] items-center justify-center px-4 py-10"
-  >
-    <Card class="w-full max-w-xl">
-      <CardHeader>
-        <CardTitle class="text-2xl">
-          {{ $t('home.title') }}
-        </CardTitle>
-        <CardDescription>
-          {{ $t('home.subtitle') }}
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent class="space-y-4">
-        <!-- Result state -->
-        <div v-if="result" class="space-y-4">
-          <div class="rounded-lg border bg-muted/40 p-4">
-            <p
-              class="mb-2 text-xs tracking-wide text-muted-foreground uppercase"
-            >
-              {{ $t('home.result_title') }}
-            </p>
-            <div class="flex items-center gap-2">
-              <code class="flex-1 truncate text-sm font-medium">{{ result.shortLink }}</code>
-              <Button
-                type="button"
-                size="icon"
-                variant="secondary"
-                :aria-label="$t('home.copy')"
-                @click="copyLink"
+        <CardContent class="space-y-4">
+          <!-- Result state -->
+          <div v-if="result" class="space-y-4">
+            <div class="rounded-lg border bg-muted/40 p-4">
+              <p
+                class="mb-2 text-xs tracking-wide text-muted-foreground uppercase"
               >
-                <Check v-if="copied" class="h-4 w-4" />
-                <Copy v-else class="h-4 w-4" />
-              </Button>
+                {{ $t('home.result_title') }}
+              </p>
+              <div class="flex items-center gap-2">
+                <code class="flex-1 truncate text-sm font-medium">{{ result.shortLink }}</code>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="secondary"
+                  :aria-label="$t('home.copy')"
+                  @click="copyLink"
+                >
+                  <Check v-if="copied" class="h-4 w-4" />
+                  <Copy v-else class="h-4 w-4" />
+                </Button>
+              </div>
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              class="w-full"
+              @click="reset"
+            >
+              {{ $t('home.create_another') }}
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            class="w-full"
-            @click="reset"
+
+          <!-- Form state -->
+          <form
+            v-else
+            class="space-y-4"
+            @submit.prevent="generate"
           >
-            {{ $t('home.create_another') }}
-          </Button>
-        </div>
-
-        <!-- Form state -->
-        <form
-          v-else
-          class="space-y-4"
-          @submit.prevent="generate"
-        >
-          <div class="space-y-2">
-            <Label for="url">{{ $t('home.form.url') }}</Label>
-            <Input
-              id="url"
-              v-model="url"
-              type="url"
-              inputmode="url"
-              autocomplete="url"
-              placeholder="https://example.com"
-              :disabled="isLoading"
-              required
-            />
-          </div>
-
-          <div class="space-y-2">
-            <Label for="slug">{{ $t('home.form.slug') }}</Label>
-            <div class="flex gap-2">
+            <div class="space-y-2">
+              <Label for="url">{{ $t('home.form.url') }}</Label>
               <Input
-                id="slug"
-                v-model="slug"
-                type="text"
-                autocomplete="off"
-                :placeholder="$t('home.form.slug_placeholder')"
+                id="url"
+                v-model="url"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                placeholder="https://example.com"
                 :disabled="isLoading"
-                class="flex-1"
+                required
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                :aria-label="$t('home.form.random')"
-                :disabled="isLoading"
-                @click="randomizeSlug"
-              >
-                <Shuffle class="h-4 w-4" />
-              </Button>
             </div>
-          </div>
 
-          <!-- Human verification -->
-          <div
-            v-if="showCaptcha"
-            class="space-y-2"
-          >
-            <p class="text-xs text-muted-foreground">
-              {{ $t('home.captcha.prompt') }}
-            </p>
-            <PlayCaptcha
-              v-if="!captchaVerified"
-              :key="locale"
-              @verify="captchaVerified = true"
-            />
+            <div class="space-y-2">
+              <Label for="slug">{{ $t('home.form.slug') }}</Label>
+              <div class="flex gap-2">
+                <Input
+                  id="slug"
+                  v-model="slug"
+                  type="text"
+                  autocomplete="off"
+                  :placeholder="$t('home.form.slug_placeholder')"
+                  :disabled="isLoading"
+                  class="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  :aria-label="$t('home.form.random')"
+                  :disabled="isLoading"
+                  @click="randomizeSlug"
+                >
+                  <Shuffle class="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <!-- Human verification -->
             <div
-              v-else
-              class="
-                flex items-center gap-2 rounded-md border border-green-500/40
-                bg-green-500/10 px-3 py-2 text-sm text-green-600
-              "
+              v-if="showCaptcha"
+              class="space-y-2"
             >
-              <Check class="h-4 w-4" />
-              {{ $t('home.captcha.verified') }}
+              <p class="text-xs text-muted-foreground">
+                {{ $t('home.captcha.prompt') }}
+              </p>
+              <PlayCaptcha
+                v-if="!captchaVerified"
+                :key="locale"
+                :title="$t('home.captcha.title')"
+                @verify="captchaVerified = true"
+              />
+              <div
+                v-else
+                class="
+                  flex items-center gap-2 rounded-md border border-green-500/40
+                  bg-green-500/10 px-3 py-2 text-sm text-green-600
+                "
+              >
+                <Check class="h-4 w-4" />
+                {{ $t('home.captcha.verified') }}
+              </div>
             </div>
-          </div>
 
-          <Alert v-if="errorMsg" variant="destructive">
-            <AlertDescription>{{ errorMsg }}</AlertDescription>
-          </Alert>
+            <Alert v-if="errorMsg" variant="destructive">
+              <AlertDescription>{{ errorMsg }}</AlertDescription>
+            </Alert>
 
-          <Button
-            type="submit"
-            class="w-full"
-            :disabled="isLoading || !captchaVerified"
-          >
-            <span
-              v-if="isLoading" class="
-                mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current
-                border-t-transparent
-              "
-            />
-            {{ isLoading ? $t('home.generating') : $t('home.generate') }}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <Button
+              type="submit"
+              class="w-full"
+              :disabled="isLoading || !captchaVerified"
+            >
+              <span
+                v-if="isLoading" class="
+                  mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current
+                  border-t-transparent
+                "
+              />
+              {{ isLoading ? $t('home.generating') : $t('home.generate') }}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   </div>
 </template>

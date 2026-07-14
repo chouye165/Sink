@@ -1,6 +1,16 @@
 import { z } from 'zod'
 
-const listQueryLimit = +useRuntimeConfig().listQueryLimit
+// `useRuntimeConfig()` must not be called at module scope — it breaks SSR of
+// any page that imports this schema (the composable needs a Nuxt context).
+// Resolve it lazily with a safe fallback for module-load time.
+function getListQueryLimit(): number {
+  try {
+    return +useRuntimeConfig().listQueryLimit
+  }
+  catch {
+    return 500
+  }
+}
 
 export const QuerySchema = z.object({
   id: z.string().optional(),
@@ -19,7 +29,7 @@ export const QuerySchema = z.object({
   browserType: z.string().optional(),
   device: z.string().optional(),
   deviceType: z.string().optional(),
-  limit: z.coerce.number().int().safe().default(listQueryLimit),
+  limit: z.coerce.number().int().safe().default(() => getListQueryLimit()),
 })
 
 export type Query = z.infer<typeof QuerySchema>

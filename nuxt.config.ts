@@ -48,9 +48,9 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/': {
-      prerender: true,
-    },
+    // The home page is now a dynamic, client-interactive short-link generator
+    // (fetches public config, mounts the React captcha). Prerendering it caches
+    // a broken/empty snapshot, so it must be rendered on-demand instead.
     '/api/**': {
       cors: process.env.NUXT_API_CORS === 'true',
     },

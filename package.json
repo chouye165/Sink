@@ -30,7 +30,7 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "playcaptcha": "^0.1.0",
+    "playcaptcha": "file:./playcaptcha-main/playcaptcha-main",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

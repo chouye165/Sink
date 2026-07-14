@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       playcaptcha:
-        specifier: ^0.1.0
-        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: file:./playcaptcha-main/playcaptcha-main
+        version: file:playcaptcha-main/playcaptcha-main(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -6207,8 +6207,8 @@ packages:
   pkg-types@2.3.1:
     resolution: {integrity: sha512-y+ichcgc2LrADuhLNAx8DFjVfgz91pRxfZdI3UDhxHvcVEZsenLO+7XaU5vOp0u/7V/wZ+plyuQxtrDlZJ+yeg==}
 
-  playcaptcha@0.1.0:
-    resolution: {integrity: sha512-7DF6WxO0OGye/nhkW2d8C55a66qDG7JBwcuw5glMUxnkoQz+ogeJ3fF+ZNyKb8i9w3+YJctaQRZTvTdFcFwZnQ==}
+  playcaptcha@file:playcaptcha-main/playcaptcha-main:
+    resolution: {directory: playcaptcha-main/playcaptcha-main, type: directory}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -14016,7 +14016,7 @@ snapshots:
       exsolve: 1.1.0
       pathe: 2.0.3
 
-  playcaptcha@0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  playcaptcha@file:playcaptcha-main/playcaptcha-main(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       motion: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
